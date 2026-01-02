@@ -1,8 +1,7 @@
-from flask import Blueprint, jsonify
-from ytmusicapi import YTMusic
+from flask import Blueprint, jsonify, request
+from utils.ytmusic_utils import get_ytmusic
 
 bp = Blueprint('albums', __name__)
-ytmusic = YTMusic()
 
 @bp.route('/api/album/<browse_id>', methods=['GET'])
 def get_album(browse_id):
@@ -16,6 +15,7 @@ def get_album(browse_id):
             return jsonify({'error': 'Browse ID is required'}), 400
         
         # Get album details
+        ytmusic = get_ytmusic()
         album_info = ytmusic.get_album(browse_id)
         
         return jsonify({

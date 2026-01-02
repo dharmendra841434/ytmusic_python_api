@@ -1,8 +1,7 @@
-from flask import Blueprint, jsonify
-from ytmusicapi import YTMusic
+from flask import Blueprint, jsonify, request
+from utils.ytmusic_utils import get_ytmusic
 
 bp = Blueprint('songs', __name__)
-ytmusic = YTMusic()
 
 @bp.route('/api/song/<video_id>', methods=['GET'])
 def get_song(video_id):
@@ -16,6 +15,7 @@ def get_song(video_id):
             return jsonify({'error': 'Video ID is required'}), 400
         
         # Get song details
+        ytmusic = get_ytmusic()
         song_info = ytmusic.get_song(video_id)
         
         return jsonify({
@@ -39,6 +39,7 @@ def get_stream_url(video_id):
             return jsonify({'error': 'Video ID is required'}), 400
         
         # Get song details which includes streaming info
+        ytmusic = get_ytmusic()
         song_info = ytmusic.get_song(video_id)
         
         # Extract streaming formats

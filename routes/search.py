@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify
-from ytmusicapi import YTMusic
+from utils.ytmusic_utils import get_ytmusic
 
 bp = Blueprint('search', __name__)
-ytmusic = YTMusic()
 
 @bp.route('/api/search', methods=['GET'])
 def search():
@@ -14,9 +13,11 @@ def search():
         - limit: Number of results (default: 20)
     """
     try:
-        query = request.args.get('query')
+        query = request.args.get('query', '').strip()
+        
+        # If query is empty, use 'Trending' to return mixed data as requested
         if not query:
-            return jsonify({'error': 'Query parameter is required'}), 400
+            query = "Trending"
         
         filter_type = request.args.get('filter', None)
         limit = int(request.args.get('limit', 20))
@@ -27,7 +28,9 @@ def search():
             return jsonify({'error': f'Invalid filter. Must be one of: {", ".join(valid_filters)}'}), 400
         
         # Perform search
-        results = ytmusic.search(query, filter=filter_type, limit=limit)
+        ytmusic = get_ytmusic()
+        # ignore_spelling=True handles 'spelling false' requirement
+        results = ytmusic.search(query, filter=filter_type, limit=limit, ignore_spelling=True)
         
         return jsonify({
             'success': True,

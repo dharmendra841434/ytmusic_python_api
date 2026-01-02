@@ -14,9 +14,6 @@ app = Flask(__name__)
 cors_origins = os.getenv('CORS_ORIGINS', '*')
 CORS(app, origins=cors_origins)
 
-# Initialize YTMusic client
-ytmusic = YTMusic()
-
 # Import routes
 from routes import search, songs, albums, artists, playlists, browse, lyrics
 

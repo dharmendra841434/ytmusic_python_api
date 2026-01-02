@@ -1,17 +1,21 @@
-from flask import Blueprint, jsonify
-from ytmusicapi import YTMusic
+from flask import Blueprint, jsonify, request
+from utils.ytmusic_utils import get_ytmusic
 
 bp = Blueprint('browse', __name__)
-ytmusic = YTMusic()
 
 @bp.route('/api/home', methods=['GET'])
 def get_home():
     """
     Get home feed with recommendations and trending content
+    Query params:
+        - limit: Number of rows to return (default: 10)
     """
     try:
+        limit = int(request.args.get('limit', 10))
+        
         # Get home feed
-        home_feed = ytmusic.get_home()
+        ytmusic = get_ytmusic()
+        home_feed = ytmusic.get_home(limit=limit)
         
         return jsonify({
             'success': True,
@@ -28,6 +32,7 @@ def get_charts():
     """
     try:
         # Get charts - default country
+        ytmusic = get_ytmusic()
         charts = ytmusic.get_charts()
         
         return jsonify({
@@ -50,6 +55,7 @@ def get_charts_by_country(country):
             return jsonify({'error': 'Country code is required'}), 400
         
         # Get charts for specific country
+        ytmusic = get_ytmusic()
         charts = ytmusic.get_charts(country=country.upper())
         
         return jsonify({

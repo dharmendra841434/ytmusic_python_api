@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify
-from ytmusicapi import YTMusic
+from utils.ytmusic_utils import get_ytmusic
 
 bp = Blueprint('playlists', __name__)
-ytmusic = YTMusic()
 
 @bp.route('/api/playlist/<playlist_id>', methods=['GET'])
 def get_playlist(playlist_id):
@@ -20,6 +19,7 @@ def get_playlist(playlist_id):
         limit = int(request.args.get('limit', 100))
         
         # Get playlist details
+        ytmusic = get_ytmusic()
         playlist_info = ytmusic.get_playlist(playlist_id, limit=limit)
         
         return jsonify({
